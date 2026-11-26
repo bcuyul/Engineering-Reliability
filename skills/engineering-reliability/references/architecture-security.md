@@ -1,0 +1,5 @@
+# Architecture and security / Arquitectura y seguridad
+
+Keep existing layers and explicit contracts. Identify source of truth, ownership, transaction boundaries, retries, idempotency and concurrency. Validate authorization server-side and inputs at trust boundaries. Minimize privileges, redact secrets, bound resource use, isolate untrusted file processing, prevent path traversal and injection. Test failure and recovery; migrations need verified backups or safe alternatives. Never disable security controls for convenience. For high risk, model threats and require independent review.
+
+Mantén capas y contratos existentes. Identifica fuente de verdad, propiedad, transacciones, reintentos, idempotencia y concurrencia. Valida autorización en servidor y entradas en límites de confianza. Minimiza permisos, oculta secretos, limita recursos, aísla archivos no confiables, previene traversal e inyección. Prueba fallos y recuperación; migraciones requieren respaldos verificados o alternativas seguras. No desactives controles por comodidad. Para riesgo alto modela amenazas y exige revisión independiente.

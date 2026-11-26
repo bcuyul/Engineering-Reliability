@@ -1,0 +1,5 @@
+# Testing and delivery / Pruebas y entrega
+
+Reproduce a defect before fixing when feasible. Add focused regression coverage; include negative cases, boundaries, failure and recovery where relevant. Run existing lint, type, unit, integration and smoke checks as appropriate. Capture commands, exit codes and candidate SHA. Review actual diff and affected code. Separate implementer and reviewer for high risk; isolate worktrees and never overwrite others' changes. CI is not proof of production behavior. Require explicit approval for sensitive external actions. Use PASS/FAIL/NOT RUN/N/A and report gaps.
+
+Reproduce el defecto antes de corregir cuando sea viable. Añade regresiones focalizadas, casos negativos, límites, fallos y recuperación pertinentes. Ejecuta lint, tipos, pruebas unitarias, integración y smoke según corresponda. Registra comandos, códigos de salida y SHA. Revisa diff y código afectado. Separa implementador y revisor en riesgo alto, aísla worktrees y no sobrescribas cambios ajenos. CI no demuestra funcionamiento productivo. Exige aprobación explícita para acciones externas sensibles. Usa PASS/FAIL/NOT RUN/N/A y declara carencias.

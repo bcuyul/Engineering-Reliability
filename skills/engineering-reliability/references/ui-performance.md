@@ -1,0 +1,5 @@
+# UI and performance / UI y rendimiento
+
+Preserve workflows and functionality before redesign. Use existing design system and native controls; no fake buttons or generic decorative dashboards. Verify keyboard access, labels, contrast, focus, responsive layout, resizing, loading, empty and error states. Test real interactions and representative data. Measure performance before optimizing; compare same workload, environment and build. Record latency distribution, memory and CPU where relevant. Do not trade correctness for speed.
+
+Preserva flujos y funciones antes de rediseñar. Usa sistema visual existente y controles nativos; sin botones ficticios ni paneles decorativos genéricos. Verifica teclado, etiquetas, contraste, foco, adaptación, redimensionamiento y estados de carga, vacío y error. Prueba interacciones reales y datos representativos. Mide antes de optimizar con carga, entorno y compilación comparables. Registra distribución de latencia, memoria y CPU cuando corresponda. No sacrifiques correctitud por velocidad.
