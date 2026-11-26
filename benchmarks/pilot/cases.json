@@ -1,0 +1,406 @@
+[
+  {
+    "id": "csv",
+    "task": "Fix solve(text), a CSV importer for sku,qty. The input has no header. Ignore blank rows; retain valid rows in order as [sku,qty]. Report invalid 1-based record numbers in errors. SKU is nonempty after trimming; qty is an integer from 1 to 1000. A row must have exactly two fields. Quoted commas must work. Input is well-formed CSV syntax.",
+    "es": "Corregir importación CSV con validación y errores por fila.",
+    "source": "def solve(text):\n    return {'rows': [[a, int(b)] for a,b in (line.split(',') for line in text.splitlines())], 'errors': []}\n",
+    "reference": "import csv, io\ndef solve(text):\n    rows, errors = [], []\n    for n, row in enumerate(csv.reader(io.StringIO(text)), 1):\n        if not row: continue\n        try:\n            sku, qty = row\n            sku, qty = sku.strip(), int(qty)\n            if not sku or not 1 <= qty <= 1000: raise ValueError\n            rows.append([sku, qty])\n        except ValueError: errors.append(n)\n    return {'rows': rows, 'errors': errors}\n",
+    "checks": [
+      [
+        "A,2\nB,3",
+        {
+          "rows": [
+            [
+              "A",
+              2
+            ],
+            [
+              "B",
+              3
+            ]
+          ],
+          "errors": []
+        }
+      ],
+      [
+        "A,2\nB,no\nC,4",
+        {
+          "rows": [
+            [
+              "A",
+              2
+            ],
+            [
+              "C",
+              4
+            ]
+          ],
+          "errors": [
+            2
+          ]
+        }
+      ],
+      [
+        "\"A,B\",3\n,1",
+        {
+          "rows": [
+            [
+              "A,B",
+              3
+            ]
+          ],
+          "errors": [
+            2
+          ]
+        }
+      ],
+      [
+        "\n X ,0\nY,1001\nZ,1000",
+        {
+          "rows": [
+            [
+              "Z",
+              1000
+            ]
+          ],
+          "errors": [
+            2,
+            3
+          ]
+        }
+      ],
+      [
+        "A,1,extra\nB,1",
+        {
+          "rows": [
+            [
+              "B",
+              1
+            ]
+          ],
+          "errors": [
+            1
+          ]
+        }
+      ]
+    ]
+  },
+  {
+    "id": "tenant-auth",
+    "task": "Fix solve(request), which returns document content or null. Request has user and doc objects. A user may read only if authenticated is exactly true, user.tenant is a nonempty string equal to doc.tenant, and user.role is either viewer or admin. Missing fields and other roles deny. Return doc.content if allowed, otherwise None. Inputs are JSON objects with user/doc objects.",
+    "es": "Corregir autorización entre organizaciones con denegación por defecto.",
+    "source": "def solve(request):\n    return request['doc']['content'] if request['user'].get('authenticated') else None\n",
+    "reference": "def solve(request):\n    u, d = request['user'], request['doc']\n    t = u.get('tenant')\n    if u.get('authenticated') is True and isinstance(t, str) and t and t == d.get('tenant') and u.get('role') in ('viewer','admin'):\n        return d.get('content')\n    return None\n",
+    "checks": [
+      [
+        {
+          "user": {
+            "authenticated": true,
+            "tenant": "a",
+            "role": "viewer"
+          },
+          "doc": {
+            "tenant": "a",
+            "content": "ok"
+          }
+        },
+        "ok"
+      ],
+      [
+        {
+          "user": {
+            "authenticated": true,
+            "tenant": "a",
+            "role": "admin"
+          },
+          "doc": {
+            "tenant": "b",
+            "content": "secret"
+          }
+        },
+        null
+      ],
+      [
+        {
+          "user": {
+            "authenticated": false,
+            "tenant": "a",
+            "role": "admin"
+          },
+          "doc": {
+            "tenant": "a",
+            "content": "secret"
+          }
+        },
+        null
+      ],
+      [
+        {
+          "user": {
+            "authenticated": true,
+            "role": "viewer"
+          },
+          "doc": {
+            "content": "secret"
+          }
+        },
+        null
+      ],
+      [
+        {
+          "user": {
+            "authenticated": 1,
+            "tenant": "a",
+            "role": "viewer"
+          },
+          "doc": {
+            "tenant": "a",
+            "content": "secret"
+          }
+        },
+        null
+      ],
+      [
+        {
+          "user": {
+            "authenticated": true,
+            "tenant": "a",
+            "role": "guest"
+          },
+          "doc": {
+            "tenant": "a",
+            "content": "secret"
+          }
+        },
+        null
+      ]
+    ]
+  },
+  {
+    "id": "idempotency",
+    "task": "Fix solve(events). Each event is {id: nonempty string, amount: integer cents}. Return {'total': sum, 'conflicts': ids}. Apply the first occurrence of each id once; duplicate with same amount is a no-op; duplicate with differing amount is a conflict. Report each conflicting id once, in order of first conflict. Amount can be negative.",
+    "es": "Evitar contabilización duplicada y reportar conflictos.",
+    "source": "def solve(events):\n    return {'total': sum(e['amount'] for e in events), 'conflicts': []}\n",
+    "reference": "def solve(events):\n    seen, conflicts = {}, []\n    for e in events:\n        k, v = e['id'], e['amount']\n        if k not in seen: seen[k] = v\n        elif seen[k] != v and k not in conflicts: conflicts.append(k)\n    return {'total': sum(seen.values()), 'conflicts': conflicts}\n",
+    "checks": [
+      [
+        [],
+        {
+          "total": 0,
+          "conflicts": []
+        }
+      ],
+      [
+        [
+          {
+            "id": "a",
+            "amount": 10
+          },
+          {
+            "id": "a",
+            "amount": 10
+          }
+        ],
+        {
+          "total": 10,
+          "conflicts": []
+        }
+      ],
+      [
+        [
+          {
+            "id": "a",
+            "amount": 10
+          },
+          {
+            "id": "a",
+            "amount": 20
+          },
+          {
+            "id": "a",
+            "amount": 30
+          }
+        ],
+        {
+          "total": 10,
+          "conflicts": [
+            "a"
+          ]
+        }
+      ],
+      [
+        [
+          {
+            "id": "x",
+            "amount": -3
+          },
+          {
+            "id": "y",
+            "amount": 5
+          }
+        ],
+        {
+          "total": 2,
+          "conflicts": []
+        }
+      ],
+      [
+        [
+          {
+            "id": "a",
+            "amount": 1
+          },
+          {
+            "id": "b",
+            "amount": 2
+          },
+          {
+            "id": "b",
+            "amount": 3
+          },
+          {
+            "id": "a",
+            "amount": 4
+          }
+        ],
+        {
+          "total": 3,
+          "conflicts": [
+            "b",
+            "a"
+          ]
+        }
+      ]
+    ]
+  },
+  {
+    "id": "archive-name",
+    "task": "Fix solve(name), a lexical archive member validator (no filesystem operations). Return true only for nonempty relative POSIX paths made of slash-separated nonempty components; reject . and .. components, backslashes, colon, NUL, leading/trailing slash and duplicate slash. Other characters including spaces and Unicode are allowed. This is lexical validation only, not a complete safe extraction implementation.",
+    "es": "Validar rutas de archivos comprimidos sin acceso al sistema de archivos.",
+    "source": "def solve(name):\n    return not name.startswith('/')\n",
+    "reference": "def solve(name):\n    return bool(name) and not any(c in name for c in ('\\\\', ':', '\\x00')) and all(p not in ('', '.', '..') for p in name.split('/'))\n",
+    "checks": [
+      [
+        "folder/a.txt",
+        true
+      ],
+      [
+        "../x",
+        false
+      ],
+      [
+        "a/../../x",
+        false
+      ],
+      [
+        "/root",
+        false
+      ],
+      [
+        "C:\\x",
+        false
+      ],
+      [
+        "a//b",
+        false
+      ],
+      [
+        "a/./b",
+        false
+      ],
+      [
+        "a/",
+        false
+      ],
+      [
+        "a\u0000b",
+        false
+      ],
+      [
+        "área/a b.txt",
+        true
+      ],
+      [
+        "",
+        false
+      ]
+    ]
+  },
+  {
+    "id": "batch",
+    "task": "Fix solve(items). Return a list of batches in original order with at most 3 items per batch AND sum of item sizes <= 10. Each size is an integer. Use greedy batching: close the current batch only when the next item would exceed a limit. If any size is outside 1..10 return None, not partial batches. Empty input returns [].",
+    "es": "Corregir lotes con dos límites y rechazo atómico.",
+    "source": "def solve(items):\n    return [items[i:i+3] for i in range(0,len(items),3)]\n",
+    "reference": "def solve(items):\n    if any(not 1 <= n <= 10 for n in items): return None\n    batches, batch = [], []\n    for n in items:\n        if len(batch) == 3 or sum(batch)+n > 10:\n            batches.append(batch); batch = []\n        batch.append(n)\n    if batch: batches.append(batch)\n    return batches\n",
+    "checks": [
+      [
+        [],
+        []
+      ],
+      [
+        [
+          1,
+          2,
+          3,
+          4
+        ],
+        [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4
+          ]
+        ]
+      ],
+      [
+        [
+          6,
+          5,
+          5
+        ],
+        [
+          [
+            6
+          ],
+          [
+            5,
+            5
+          ]
+        ]
+      ],
+      [
+        [
+          10,
+          1,
+          9
+        ],
+        [
+          [
+            10
+          ],
+          [
+            1,
+            9
+          ]
+        ]
+      ],
+      [
+        [
+          1,
+          11
+        ],
+        null
+      ],
+      [
+        [
+          0,
+          3
+        ],
+        null
+      ]
+    ]
+  }
+]
