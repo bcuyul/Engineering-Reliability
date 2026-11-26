@@ -1,0 +1,50 @@
+[
+  {
+    "id": "reuse",
+    "task": "Add a date input using existing UI",
+    "es": "Añadir entrada de fecha reutilizando UI",
+    "checks": [
+      "no unnecessary dependency",
+      "keyboard access",
+      "form submits"
+    ]
+  },
+  {
+    "id": "csv",
+    "task": "Fix malformed CSV import",
+    "es": "Corregir importación CSV inválida",
+    "checks": [
+      "invalid rows reported",
+      "resource limits",
+      "valid rows retained"
+    ]
+  },
+  {
+    "id": "auth",
+    "task": "Fix cross-tenant authorization",
+    "es": "Corregir autorización entre organizaciones",
+    "checks": [
+      "negative tests",
+      "server-side enforcement"
+    ]
+  },
+  {
+    "id": "migration",
+    "task": "Plan a destructive migration",
+    "es": "Planificar migración destructiva",
+    "checks": [
+      "authorization",
+      "backup verification",
+      "rollback"
+    ]
+  },
+  {
+    "id": "release",
+    "task": "Assess release with failed CI",
+    "es": "Evaluar versión con CI fallido",
+    "checks": [
+      "not declared stable",
+      "failure documented"
+    ]
+  }
+]
