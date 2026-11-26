@@ -1,5 +1,6 @@
 """Controlled single-turn benchmark. No third-party Python dependencies."""
 import argparse
+import difflib
 import hashlib
 import json
 import math
@@ -91,6 +92,10 @@ def smoke():
         raise RuntimeError("invalid candidate accepted")
     assert parse_candidate('{"code":"def solve(x): return x"}')
     assert score_output('[{"value":true}]', [[1, 1]]) == 0
+    assert len(schedule(2, 7)) == 20
+    assert schedule(2, 7) == schedule(2, 7)
+    assert "Engineering guidance:" not in prompt(CASES[0], "")
+    assert prompt(CASES[0], "sentinel").endswith("sentinel")
     print("SMOKE PASS — deterministic fixtures only; no model calls.")
 
 def schedule(repetitions, seed):
@@ -140,6 +145,12 @@ def live(args):
     if revision.returncode or status.returncode or status.stdout.strip():
         raise SystemExit("Run from a clean committed checkout.")
     guidance = skill_text()
+    # Verify the actual isolated evaluator before spending any model budget.
+    image_id = image.stdout.strip()
+    for case in CASES:
+        if grade(case, case["reference"], image_id) != len(case["checks"]):
+            raise SystemExit("Docker evaluator rejected reference: " + case["id"])
+    print("Docker preflight PASS", flush=True)
     out = ROOT / "benchmarks" / "local-results" / uuid.uuid4().hex
     out.mkdir(parents=True)
     meta = {"mode": "single-turn-explicit-context", "model": args.model,
@@ -174,10 +185,18 @@ def live(args):
             row.update(cost_usd=data.get("total_cost_usd"), usage=data.get("usage"))
             if response.returncode or data.get("is_error") or data.get("subtype") != "success":
                 raise RuntimeError("agent failed or budget exceeded")
-            code = parse_candidate(data["result"])
-            (out / (key + ".candidate.txt")).write_text(code, encoding="utf-8")
-            row["passed"] = grade(case, code, image.stdout.strip())
-            row["status"] = "PASS" if row["passed"] == row["checks"] else "FAIL"
+            try:
+                code = parse_candidate(data["result"])
+            except (ValueError, KeyError, TypeError, SyntaxError) as exc:
+                row["status"] = "FAIL"
+                row["error"] = "Invalid candidate: " + type(exc).__name__
+            else:
+                (out / (key + ".candidate.txt")).write_text(code, encoding="utf-8")
+                diff = list(difflib.ndiff(case["source"].splitlines(), code.splitlines()))
+                row["added_lines"] = sum(line.startswith("+ ") for line in diff)
+                row["removed_lines"] = sum(line.startswith("- ") for line in diff)
+                row["passed"] = grade(case, code, image_id)
+                row["status"] = "PASS" if row["passed"] == row["checks"] else "FAIL"
         except (OSError, ValueError, KeyError, TypeError, AttributeError, SyntaxError,
                 RuntimeError, subprocess.TimeoutExpired) as exc:
             row["error"] = type(exc).__name__ + ": " + str(exc)[:240]
@@ -211,6 +230,8 @@ def main():
     p.add_argument("--seed", type=int, default=20261126)
     p.add_argument("--confirm-isolated", action="store_true")
     args = p.parse_args()
+    if not math.isfinite(args.budget) or args.budget <= 0:
+        p.error("--budget must be positive and finite")
     if args.mode == "smoke": smoke()
     elif args.mode == "plan":
         print(json.dumps({"runs": len(schedule(args.repetitions, args.seed)),
