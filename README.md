@@ -29,7 +29,7 @@ Read the affected code. Prefer existing capabilities. Make the smallest complete
 | R2 · Feature | Contracts, alternatives, regression tests, review |
 | R3 · Critical | Authorization, isolation, recovery, independent review |
 
-Security, data integrity, accessibility and recovery are not optional shortcuts.
+Security, data integrity, accessibility and recovery are not optional shortcuts. Stateful changes must verify [lifecycle transitions and invariants](skills/engineering-reliability/references/state-transitions.md), not only isolated operations.
 
 ## Skills
 

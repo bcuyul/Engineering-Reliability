@@ -2,7 +2,7 @@
 name: engineering-reliability
 description: Risk-aware software engineering for coding, debugging, architecture, refactoring, UI, automation, dependencies, security, testing and releases. Use for new or existing software and continuation requests. Aplica al programar, corregir, investigar, automatizar y preparar versiones estables.
 metadata:
-  version: "2.1.0-rc.1"
+  version: "2.2.0-rc.1"
 ---
 # Engineering Reliability
 
@@ -29,13 +29,13 @@ Choose the highest applicable tier. Unknown consequential risk escalates.
 1. Discover scope, baseline, constraints, acceptance criteria and non-goals.
 2. Decide: reuse first; compare credible alternatives for significant changes.
 3. Isolate meaningful changes; never overwrite unrelated work or bypass permissions.
-4. Reproduce defects or define positive and negative acceptance tests.
+4. Reproduce defects or define positive and negative acceptance tests. For stateful changes, identify invariants and test meaningful transitions (including zero vs missing, retries, persistence and rollback as applicable), not just isolated operations.
 5. Implement the minimum complete change; preserve validation, errors, resource limits and authorization.
 6. Review actual diff and affected callers, security, data integrity, tests and performance.
 7. Run relevant checks; record command, exit status, scope and candidate revision. Never weaken checks to hide regressions.
 8. Deliver changes, evidence and limitations. Separate a candidate from an approved release.
 
-Load only relevant references: [dependencies](references/dependencies.md), [architecture and security](references/architecture-security.md), [testing and delivery](references/testing-delivery.md), [UI and performance](references/ui-performance.md). For release readiness use [evidence template](assets/evidence.md). Report PASS, FAIL, NOT RUN or N/A with reasons. Missing required checks block a stable verdict. Keep small tasks small.
+Load only relevant references: [dependencies](references/dependencies.md), [architecture and security](references/architecture-security.md), [testing and delivery](references/testing-delivery.md), [UI and performance](references/ui-performance.md), [state transitions](references/state-transitions.md) for persistent or lifecycle logic. For release readiness use [evidence template](assets/evidence.md). Report PASS, FAIL, NOT RUN or N/A with reasons. Missing required checks block a stable verdict. Keep small tasks small.
 
 ## Español
 
@@ -45,4 +45,4 @@ Inspecciona código, consumidores, pruebas, configuración y cambios existentes;
 
 Clasifica por el mayor riesgo: R0 investigación sin cambios; R1 corrección reversible y prueba focalizada; R2 funcionalidad/refactor/dependencia con criterios, alternativas, regresión y revisión; R3 autenticación, datos sensibles, producción, redes, migraciones destructivas o ejecución no confiable con autorización, amenazas, aislamiento, recuperación y revisión independiente antes de liberar. El riesgo relevante desconocido escala.
 
-Comprende alcance y línea base; decide reutilización y alternativas; aísla cambios; reproduce errores o define pruebas positivas y negativas; implementa; revisa diff y consumidores; ejecuta comprobaciones y registra comando, salida y revisión; entrega evidencias y limitaciones. Carga solo las referencias pertinentes. Marca PASS, FAIL, NOT RUN o N/A con razones. Los controles obligatorios pendientes impiden declarar estabilidad. No conviertas tareas pequeñas en burocracia.
+Comprende alcance y línea base; decide reutilización y alternativas; aísla cambios; reproduce errores o define pruebas positivas y negativas; en lógica con estado, identifica invariantes y prueba transiciones relevantes (cero frente a ausencia, reintentos, persistencia y reversión según corresponda), no solo operaciones aisladas; implementa; revisa diff y consumidores; ejecuta comprobaciones y registra comando, salida y revisión; entrega evidencias y limitaciones. Carga solo las referencias pertinentes. Marca PASS, FAIL, NOT RUN o N/A con razones. Los controles obligatorios pendientes impiden declarar estabilidad. No conviertas tareas pequeñas en burocracia.

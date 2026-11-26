@@ -26,7 +26,7 @@ Añade `-g` para todos los proyectos. Selecciona los agentes deseados. Consulta 
 | R2 · Funcionalidad | Contratos, alternativas, regresión y revisión |
 | R3 · Crítico | Autorización, aislamiento, recuperación y revisión independiente |
 
-Nunca sacrificar seguridad, integridad de datos, accesibilidad ni recuperación.
+Nunca sacrificar seguridad, integridad de datos, accesibilidad ni recuperación. Los cambios con estado deben verificar [transiciones e invariantes](skills/engineering-reliability/references/state-transitions.md), no solo operaciones aisladas.
 
 ## Skills
 
