@@ -2,7 +2,7 @@
 name: engineering-dependencies
 description: Research repositories and select stable dependencies using versions, compatibility, licensing and advisories. Investiga repositorios y versiones estables.
 metadata:
-  version: "2.1.0-rc.1"
+  version: "2.2.0-rc.1"
 ---
 # engineering-dependencies
 

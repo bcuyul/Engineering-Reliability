@@ -22,6 +22,15 @@ class RepositoryChecks(unittest.TestCase):
             self.assertLessEqual(len(description[1]), 1024)
             self.assertIn("## Español", parts[2])
 
+    def test_state_transition_guidance(self):
+        folder = ROOT / "skills" / "engineering-reliability"
+        skill = (folder / "SKILL.md").read_text(encoding="utf-8")
+        ref = (folder / "references" / "state-transitions.md").read_text(encoding="utf-8")
+        self.assertIn("references/state-transitions.md", skill)
+        self.assertIn("## Español", ref)
+        for text in ("zero", "rollback", "cero", "reintento"):
+            self.assertIn(text, skill + ref)
+
     def test_links(self):
         for p in ROOT.rglob("*.md"):
             for link in re.findall(r"\]\(([^)]+)\)", p.read_text(encoding="utf-8")):
@@ -36,6 +45,8 @@ class RepositoryChecks(unittest.TestCase):
         for key in ("name", "version", "description"):
             self.assertEqual(claude[key], codex[key])
         self.assertEqual(claude["name"], "engineering-reliability")
+        for skill in (ROOT / "skills").glob("*/SKILL.md"):
+            self.assertIn('version: "' + claude["version"] + '"', skill.read_text(encoding="utf-8"))
         for path in (".claude-plugin/marketplace.json", ".agents/plugins/marketplace.json"):
             market = json.loads((ROOT / path).read_text(encoding="utf-8"))
             self.assertEqual(market["plugins"][0]["name"], claude["name"])
