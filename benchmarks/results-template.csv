@@ -1,0 +1,1 @@
+task,agent,model,configuration,run,baseline_sha,candidate_sha,tests_passed,tests_total,security_findings,new_dependencies,tokens,seconds,cost,notes

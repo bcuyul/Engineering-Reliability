@@ -1,0 +1,14 @@
+{
+  "name": "engineering-reliability",
+  "owner": {
+    "name": "bcuyul"
+  },
+  "plugins": [
+    {
+      "name": "engineering-reliability",
+      "description": "Risk-aware engineering for AI coding agents: small complete changes, security, tests and evidence-based releases.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "name": "engineering-reliability",
+  "interface": {
+    "displayName": "Engineering Reliability"
+  },
+  "plugins": [
+    {
+      "name": "engineering-reliability",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/bcuyul/Engineering-Reliability.git",
+        "ref": "main"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

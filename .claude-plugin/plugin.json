@@ -1,0 +1,5 @@
+{
+  "name": "engineering-reliability",
+  "version": "2.1.0-rc.1",
+  "description": "Risk-aware engineering for AI coding agents: small complete changes, security, tests and evidence-based releases."
+}
